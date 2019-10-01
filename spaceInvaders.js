@@ -10,6 +10,8 @@ var keyMap = {};
 var projTiming = 0;
 var npcs = [];
 var npcProj = [];
+var npcFire = false;
+var shoot = false;
 
 
 
@@ -28,22 +30,9 @@ function NPC(x,y){
 		c.stroke();
 	}
 
-	this.createProjectile = function(width,height){
-		c.beginPath();
-		c.rect(this.x/2,
-			   this.y/2,
-			   this.width,
-			   this.height);
-		c.stroke();
 
-	}
-
-	this.shoot = function(){
-		if(this.y - innerHeight){
-
-			this.drawProj();
-			this.y = this.y+2;
-		}
+	this.addProjectile = function(){
+		npcProj.push(new npcProjectile(this.x,this.y,2,5));
 	}
 
 	this.hitDetection = function(){
@@ -65,6 +54,28 @@ function Ship(width,height){
 }
 
 
+function npcProjectile(x,y,width,height){
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.active = true;
+	this.drawProj = function(){
+		c.beginPath();
+		c.rect(x = this.x,y = this.y,width,height);
+		c.fillStyle = 'red';
+		c.fill();
+	}
+
+	this.shoot = function(){
+		if(this.y < innerHeight){
+			this.drawProj();
+			this.y = this.y+2;
+		}
+	}
+
+	
+}
 
 
 function Projectile(width,height){
@@ -96,6 +107,7 @@ function Projectile(width,height){
 //მემგონი რო keyUp-ზედმეტად ამატებს მაპში რაღაცას
 window.addEventListener('keydown',function(event){
 	keyMap[event.keyCode] = event.type == 'keydown';
+	console.log(event);
 	
 });
 
@@ -109,6 +121,10 @@ function movementContoller(){
 	if(keyMap[83])ship.y += 2;
 	if(keyMap[68])ship.x += 2;
 	if(keyMap[32])fire = true;
+	//test
+	if(keyMap[81])npcFire = true;
+	if(keyMap[69])shoot = true;
+
 }
 
 function populateNPC(){
@@ -141,21 +157,51 @@ function draw(){
 
 
 
+
+
 function animate(){
-		
 		requestAnimationFrame(animate);
 		c.clearRect(0,0,innerWidth,innerHeight);
-		draw();
+//Updating X,Y of ship
 		movementContoller();
+		draw();
+//--------------------
 
+//NPC FIRE Testing 
+
+	// console.log(npcFire);
+	if(npcFire === true){
+		console.log('shit');
+			for(var i = 0; i < npcs.length; i++){
+				npcs[i].addProjectile();
+			}
+			npcFire = false;
+		}
+
+	if(shoot === true){
+		for(var i = 0; i < npcs.length; i++){
+				npcProj[i].shoot();
+			}
+	}
+	
+
+	
+
+
+
+
+//NPC CONTROLLER
 		for(var i = 0; i<npcs.length;i++){
 			if(npcs[i].alive === true){
 				npcs[i].drawNPC();
 				npcs[i].hitDetection();
-				// npcs[i].shoot();
+				
 			}
 		}
+//----------------
 
+
+//Ship Projecitle Controller
 		if(fire === true && (Date.now()-projTiming) > 500){
 				projTiming = Date.now();
 				bullets.push(new Projectile(2,5,ship.x/2,ship.y));
@@ -164,7 +210,9 @@ function animate(){
 		for(var i = 0; i < bullets.length;i++){
 			if(bullets[i].active)bullets[i].shoot();
 		}
-		
+//--------------------------
+
+//Cleaning Projectile Array From Inacative ones
 		arrayCleaner();
 
 }
@@ -172,8 +220,7 @@ function animate(){
 
 animate();
 
-
-// //Game Initialization
+//Game Initialization
 
 
 function init(){
