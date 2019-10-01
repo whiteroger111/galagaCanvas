@@ -12,12 +12,13 @@ var npcs = [];
 var npcProj = [];
 var npcFire = false;
 var shoot = false;
+var spawnRate = 0;
 
 
-
-function NPC(x,y){
+function NPC(x,y,id){
+	this.id = 
 	this.x = (innerWidth/2) + x-150;
-	this.y = (innerHeight-800) + y;
+	this.y = (innerHeight - (innerHeight*80)/100) + y;
 	this.width = 10;
 	this.height = 5;
 	this.alive = true;
@@ -69,6 +70,7 @@ function npcProjectile(x,y,width,height){
 
 	this.shoot = function(){
 		if(this.y < innerHeight){
+			console.log(this.y < innerHeight);
 			this.drawProj();
 			this.y = this.y+2;
 		}
@@ -142,6 +144,10 @@ function arrayCleaner(){
 		}
 	}
 
+	for(var i = 0; i < npcs.length; i++){
+		if(npcs[i].alive === false)npcs.splice(i,1);
+	}
+
 }
 
 
@@ -167,22 +173,19 @@ function animate(){
 		draw();
 //--------------------
 
-//NPC FIRE Testing 
+//NPC F 
 
-	// console.log(npcFire);
-	if(npcFire === true){
-		console.log('shit');
+		if(Date.now() - spawnRate > 1000){
+			spawnRate = Date.now(); 
 			for(var i = 0; i < npcs.length; i++){
 				npcs[i].addProjectile();
 			}
-			npcFire = false;
 		}
 
-	if(shoot === true){
-		for(var i = 0; i < npcs.length; i++){
+		for(var i = 0; i < npcProj.length; i++){
 				npcProj[i].shoot();
 			}
-	}
+	
 	
 
 	
@@ -201,7 +204,7 @@ function animate(){
 //----------------
 
 
-//Ship Projecitle Controller
+//Ship Projectile Controller
 		if(fire === true && (Date.now()-projTiming) > 500){
 				projTiming = Date.now();
 				bullets.push(new Projectile(2,5,ship.x/2,ship.y));
