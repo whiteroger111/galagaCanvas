@@ -33,7 +33,7 @@ function NPC(x,y,id){
 
 
 	this.addProjectile = function(){
-		npcProj.push(new npcProjectile(this.x,this.y,2,5));
+		npcProj.push(new npcProjectile(this.x + this.width/2,this.y,2,5));
 	}
 
 	this.hitDetection = function(){
@@ -70,9 +70,13 @@ function npcProjectile(x,y,width,height){
 
 	this.shoot = function(){
 		if(this.y < innerHeight){
-			console.log(this.y < innerHeight);
 			this.drawProj();
 			this.y = this.y+2;
+			if(this.y > innerHeight){
+				this.active = false;
+				console.log(this.active);
+			}
+
 		}
 	}
 
@@ -99,9 +103,6 @@ function Projectile(width,height){
 			this.y = this.y-2;
 		}
 	}
-	this.getY = function(){
-		return this.y;
-	}
 }
 
 
@@ -109,8 +110,6 @@ function Projectile(width,height){
 //მემგონი რო keyUp-ზედმეტად ამატებს მაპში რაღაცას
 window.addEventListener('keydown',function(event){
 	keyMap[event.keyCode] = event.type == 'keydown';
-	console.log(event);
-	
 });
 
 window.addEventListener('keyup',function(event){
@@ -146,6 +145,13 @@ function arrayCleaner(){
 
 	for(var i = 0; i < npcs.length; i++){
 		if(npcs[i].alive === false)npcs.splice(i,1);
+	}
+
+	for(var i = 0; i < npcProj.length; i++){
+		if(npcProj[i].active === false){
+			npcProj.shift();
+			console.log(npcProj);
+		}
 	}
 
 }
@@ -233,4 +239,3 @@ function init(){
 
 init();
 
-console.log("hello");
