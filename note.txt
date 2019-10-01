@@ -1,0 +1,23 @@
+keyCodes
+
+a = 65
+w = 87
+s = 83
+d = 68
+space = 32
+
+Things To Do:
+1)Erase SpaceShip bullets after hit - done !
+2)Add shoot function to NPC-s
+3)Add movement on NPC-s
+4)Add Respawn for NPC-s
+5)Add GAME OVER state
+6)Add Game Restart
+7)Change square with SVG-s
+8)Add Moving Background;
+9)Work on scaling
+
+
+რაც შემიძლია დავიკიდო მარა მაინც შევხედო მერე
+
+1)ტაიმინგი ვერაა მთლად კარგადა ერთხელ დაჭერისას ორჯერ ისვრის
