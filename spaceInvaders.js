@@ -2,6 +2,7 @@ var canvas = document.getElementById("spaceInvaders");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
 var c = canvas.getContext('2d');
 var bullets = [];
 var fire = false;
@@ -13,6 +14,7 @@ var npcProj = [];
 var npcFire = false;
 var shoot = false;
 var spawnRate = 0;
+var drawShip = true;
 
 
 function NPC(x,y,id){
@@ -35,10 +37,11 @@ function NPC(x,y,id){
 	this.addProjectile = function(){
 		npcProj.push(new npcProjectile(this.x + this.width/2,this.y,2,5));
 	}
-
+	//here is bug when ship is behind npc-s and you shoot npcs are getting hitted - (kinda fixed needs better)
 	this.hitDetection = function(){
 		for(var i = 0; i <bullets.length; i++){
-			if(bullets[i].y - this.y <0 && (this.x - bullets[i].x < 10 &&  this.x - bullets[i].x > -10)){
+			if(ship.y > this.y && bullets[i].y - this.y <0 && 
+			(this.x - bullets[i].x < 10 &&  this.x - bullets[i].x > -10)){
 			bullets[i].active = false;
 			this.alive = false;
 		}
@@ -69,12 +72,15 @@ function npcProjectile(x,y,width,height){
 	}
 
 	this.shoot = function(){
+		if(this.y > ship.y && (this.x - ship.x < 10 && this.x - ship.x > -10)){
+			console.log("yes");
+		}
 		if(this.y < innerHeight){
+
 			this.drawProj();
 			this.y = this.y+2;
 			if(this.y > innerHeight){
 				this.active = false;
-				console.log(this.active);
 			}
 
 		}
@@ -150,7 +156,6 @@ function arrayCleaner(){
 	for(var i = 0; i < npcProj.length; i++){
 		if(npcProj[i].active === false){
 			npcProj.shift();
-			console.log(npcProj);
 		}
 	}
 
@@ -176,7 +181,8 @@ function animate(){
 		c.clearRect(0,0,innerWidth,innerHeight);
 //Updating X,Y of ship
 		movementContoller();
-		draw();
+		if(drawShip = true)draw();
+		
 //--------------------
 
 //NPC F 
