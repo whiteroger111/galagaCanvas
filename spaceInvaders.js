@@ -1,8 +1,10 @@
 var canvas = document.getElementById("spaceInvaders");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 700
+canvas.height = 960;
 
+var widthC = 700;
+var heightC = 960;
 var c = canvas.getContext('2d');
 var bullets = [];
 var fire = false;
@@ -19,8 +21,8 @@ var drawShip = true;
 
 function NPC(x,y,id){
 	this.id = 
-	this.x = (innerWidth/2) + x-150;
-	this.y = (innerHeight - (innerHeight*80)/100) + y;
+	this.x = (widthC/2) + x-150;
+	this.y = (heightC - (heightC*80)/100) + y;
 	this.width = 10;
 	this.height = 5;
 	this.alive = true;
@@ -53,8 +55,8 @@ function NPC(x,y,id){
 function Ship(width,height){
 	this.width = width;
 	this.height = height;
-	this.x = innerWidth/2 - width/2;
-	this.y = innerHeight/2 - height/2;
+	this.x = widthC/2 - width/2;
+	this.y = heightC/2 - height/2;
 }
 
 
@@ -75,11 +77,11 @@ function npcProjectile(x,y,width,height){
 		if(this.y > ship.y && (this.x - ship.x < 10 && this.x - ship.x > -10)){
 			console.log("yes");
 		}
-		if(this.y < innerHeight){
+		if(this.y < heightC){
 
 			this.drawProj();
 			this.y = this.y+2;
-			if(this.y > innerHeight){
+			if(this.y > heightC){
 				this.active = false;
 			}
 
@@ -101,6 +103,7 @@ function Projectile(width,height){
 		c.beginPath();
 		c.rect(this.x,this.y,width,height);
 		c.stroke();
+
 	}
 
 	this.shoot = function(){
@@ -170,6 +173,8 @@ function draw(){
 		   ship.width,
 		   ship.height);
 	c.stroke();
+	c.fillStyle = 'white';
+	c.fill();
 }
 
 
@@ -178,7 +183,7 @@ function draw(){
 
 function animate(){
 		requestAnimationFrame(animate);
-		c.clearRect(0,0,innerWidth,innerHeight);
+		c.clearRect(0,0,widthC,heightC);
 //Updating X,Y of ship
 		movementContoller();
 		if(drawShip = true)draw();
@@ -197,14 +202,6 @@ function animate(){
 		for(var i = 0; i < npcProj.length; i++){
 				npcProj[i].shoot();
 			}
-	
-	
-
-	
-
-
-
-
 //NPC CONTROLLER
 		for(var i = 0; i<npcs.length;i++){
 			if(npcs[i].alive === true){
@@ -231,9 +228,8 @@ function animate(){
 		arrayCleaner();
 
 }
-
-
 animate();
+
 
 //Game Initialization
 
@@ -242,6 +238,5 @@ function init(){
 	draw();
 	populateNPC();
 }
-
 init();
 
