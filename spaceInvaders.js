@@ -17,10 +17,14 @@ var npcFire = false;
 var shoot = false;
 var spawnRate = 0;
 var drawShip = true;
+var background = new Image();
+background.src = 'space_700_960.png'
 
 
-function NPC(x,y,id){
-	this.id = 
+
+
+//widthC - C stands for canvas
+function NPC(x,y){
 	this.x = (widthC/2) + x-150;
 	this.y = (heightC - (heightC*80)/100) + y;
 	this.width = 10;
@@ -39,7 +43,8 @@ function NPC(x,y,id){
 	this.addProjectile = function(){
 		npcProj.push(new npcProjectile(this.x + this.width/2,this.y,2,5));
 	}
-	//here is bug when ship is behind npc-s and you shoot npcs are getting hitted - (kinda fixed needs better)
+
+	//here is bug when ship is behind npc-s and you shoot npcs are getting hitted - (kinda fixed needs better solution)
 	this.hitDetection = function(){
 		for(var i = 0; i <bullets.length; i++){
 			if(ship.y > this.y && bullets[i].y - this.y <0 && 
@@ -77,18 +82,15 @@ function npcProjectile(x,y,width,height){
 		if(this.y > ship.y && (this.x - ship.x < 10 && this.x - ship.x > -10)){
 			console.log("yes");
 		}
-		if(this.y < heightC){
 
+		if(this.y < heightC){
 			this.drawProj();
 			this.y = this.y+2;
 			if(this.y > heightC){
 				this.active = false;
 			}
-
 		}
 	}
-
-	
 }
 
 
@@ -116,7 +118,6 @@ function Projectile(width,height){
 
 
 //movement 1.0
-//მემგონი რო keyUp-ზედმეტად ამატებს მაპში რაღაცას
 window.addEventListener('keydown',function(event){
 	keyMap[event.keyCode] = event.type == 'keydown';
 });
@@ -132,10 +133,8 @@ function movementContoller(){
 	if(keyMap[68])ship.x += 2;
 	if(keyMap[32])fire = true;
 	//test
-	if(keyMap[81])npcFire = true;
-	if(keyMap[69])shoot = true;
-
 }
+
 
 function populateNPC(){
 	for(var i = 0; i < 2; i++){
@@ -145,6 +144,7 @@ function populateNPC(){
 	}
 }
 
+// clear projectile arrays
 function arrayCleaner(){
 	for(var i = 0; i < bullets.length; i++){
 		if(bullets[i].y < 0){
@@ -152,6 +152,7 @@ function arrayCleaner(){
 		}
 	}
 
+//Deletes NPC from array
 	for(var i = 0; i < npcs.length; i++){
 		if(npcs[i].alive === false)npcs.splice(i,1);
 	}
@@ -163,6 +164,8 @@ function arrayCleaner(){
 	}
 
 }
+
+
 
 
 //create spaceship
@@ -184,14 +187,15 @@ function draw(){
 function animate(){
 		requestAnimationFrame(animate);
 		c.clearRect(0,0,widthC,heightC);
+		c.drawImage(background,0,0);
+		
 //Updating X,Y of ship
 		movementContoller();
 		if(drawShip = true)draw();
 		
 //--------------------
 
-//NPC F 
-
+//NPC CONTROLLER
 		if(Date.now() - spawnRate > 1000){
 			spawnRate = Date.now(); 
 			for(var i = 0; i < npcs.length; i++){
@@ -202,7 +206,7 @@ function animate(){
 		for(var i = 0; i < npcProj.length; i++){
 				npcProj[i].shoot();
 			}
-//NPC CONTROLLER
+
 		for(var i = 0; i<npcs.length;i++){
 			if(npcs[i].alive === true){
 				npcs[i].drawNPC();
@@ -211,8 +215,8 @@ function animate(){
 			}
 		}
 //----------------
-
-
+		
+		
 //Ship Projectile Controller
 		if(fire === true && (Date.now()-projTiming) > 500){
 				projTiming = Date.now();
