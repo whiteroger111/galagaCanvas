@@ -2,7 +2,7 @@ var canvas = document.getElementById("spaceInvaders");
 
 canvas.width = 700
 canvas.height = 960;
-
+var background = new Background(0,-960);
 var widthC = 700;
 var heightC = 960;
 var c = canvas.getContext('2d');
@@ -17,16 +17,31 @@ var npcFire = false;
 var shoot = false;
 var spawnRate = 0;
 var drawShip = true;
-var background = new Image();
-background.src = 'space_700_960.png'
+var backgroundImg = new Image();
+backgroundImg.src = 'Background2x.png'
+var lives = 3;
 
 
+
+
+
+function Background(x,y){
+	this.x = x;
+	this.y = y;
+	this.animation = function(){
+			c.drawImage(backgroundImg,this.x,this.y);
+			this.y+=3;
+			if(this.y > 0){
+				this.y = -960;
+			}
+	}
+}
 
 
 //widthC - C stands for canvas
 function NPC(x,y){
-	this.x = (widthC/2) + x-150;
-	this.y = (heightC - (heightC*80)/100) + y;
+	this.x = x;
+	this.y = y;
 	this.width = 10;
 	this.height = 5;
 	this.alive = true;
@@ -36,7 +51,12 @@ function NPC(x,y){
 			   this.y,
 			   this.width,
 			   this.height);
-		c.stroke();
+		c.fillStyle = 'red';
+		c.fill();
+	}
+
+	this.move = function(){
+		this.y +=5;
 	}
 
 
@@ -57,14 +77,6 @@ function NPC(x,y){
 	}
 }
 
-function Ship(width,height){
-	this.width = width;
-	this.height = height;
-	this.x = widthC/2 - width/2;
-	this.y = heightC/2 - height/2;
-}
-
-
 function npcProjectile(x,y,width,height){
 	this.x = x;
 	this.y = y;
@@ -73,14 +85,15 @@ function npcProjectile(x,y,width,height){
 	this.active = true;
 	this.drawProj = function(){
 		c.beginPath();
-		c.rect(x = this.x,y = this.y,width,height);
+		c.rect(this.x ,this.y,width,height);
 		c.fillStyle = 'red';
 		c.fill();
 	}
 
 	this.shoot = function(){
-		if(this.y > ship.y && (this.x - ship.x < 10 && this.x - ship.x > -10)){
-			console.log("yes");
+		if(this.y - ship.y >0 && (this.x - ship.x >-1  && this.x - ship.x < 39)){
+			this.active = false;
+			console.log('yes');
 		}
 
 		if(this.y < heightC){
@@ -94,6 +107,26 @@ function npcProjectile(x,y,width,height){
 }
 
 
+//Ship stuff needs refactoring | 2 projectile classes are useless 
+function Ship(width,height){
+	this.width = width;
+	this.height = height;
+	this.x = widthC/2 - width/2;
+	this.y = heightC/2 - height/2;
+	// this.hitDetection = function(){
+	// 	// console.log('shit');
+		
+	// 	for(var i = 0; i <npcProj; i++){
+			
+			
+	// 		if((this.x - npcProj[i].x > -40 && this.x - npcProj[i].x < 1 )){
+	// 			console.log("yes")
+	// 		}
+	// 	}
+	// }
+}
+
+
 function Projectile(width,height){
 	this.fire = false;
 	this.width = width;
@@ -104,12 +137,16 @@ function Projectile(width,height){
 	this.drawProj = function(){
 		c.beginPath();
 		c.rect(this.x,this.y,width,height);
-		c.stroke();
+		c.fillStyle = 'blue';
+		c.fill();
+
+	}
+	this.move = function(){
 
 	}
 
 	this.shoot = function(){
-		if(this.y > 0){
+		if(this.y > -20){
 			this.drawProj();
 			this.y = this.y-2;
 		}
@@ -135,14 +172,15 @@ function movementContoller(){
 	//test
 }
 
+// redundant at this moment
 
-function populateNPC(){
-	for(var i = 0; i < 2; i++){
-		for(var j = 0; j<10; j++){
-			npcs.push(new NPC(30*j,20*i));
-		}	
-	}
-}
+// function populateNPC(){
+// 	for(var i = 0; i < 2; i++){
+// 		for(var j = 0; j<10; j++){
+// 			npcs.push(new NPC(30*j,20*i));
+// 		}	
+// 	}
+// }
 
 // clear projectile arrays
 function arrayCleaner(){
@@ -180,18 +218,27 @@ function draw(){
 	c.fill();
 }
 
+function randomSpawn(){
+	var locationX = Math.floor(Math.random()*700);
+	var locationY = 5;
+	var npcRand = new NPC(locationX,locationY);
+	npcs.push(npcRand);
+}
 
 
+for(var i = 0; i < 1; i++){
+	randomSpawn();
+}
 
 
 function animate(){
 		requestAnimationFrame(animate);
 		c.clearRect(0,0,widthC,heightC);
-		c.drawImage(background,0,0);
-		
+		background.animation();	
 //Updating X,Y of ship
 		movementContoller();
 		if(drawShip = true)draw();
+		
 		
 //--------------------
 
@@ -216,7 +263,6 @@ function animate(){
 		}
 //----------------
 		
-		
 //Ship Projectile Controller
 		if(fire === true && (Date.now()-projTiming) > 500){
 				projTiming = Date.now();
@@ -240,7 +286,8 @@ animate();
 
 function init(){
 	draw();
-	populateNPC();
+	// populateNPC();
 }
 init();
+
 
